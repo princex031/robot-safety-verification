@@ -1,0 +1,106 @@
+"""Evaluate a CSV dataset using documented score columns.
+
+Expected columns:
+reachability_score, collision_score, force_score, torque_score,
+stability_score
+
+This program scores supplied normalized columns. It does not infer missing
+normalization rules or claim to recreate the paper's original data generator.
+"""
+
+import argparse
+import csv
+import json
+import math
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.verifier.scorer import DEFAULT_THRESHOLD, calculate_score, meets_threshold
+
+FACTOR_COLUMNS = {
+    "reachability": "reachability_score",
+    "collision": "collision_score",
+    "force": "force_score",
+    "torque": "torque_score",
+    "stability": "stability_score",
+}
+
+
+def evaluate(dataset: Path, threshold: float) -> tuple[list[dict], dict]:
+    if not dataset.is_file():
+        raise FileNotFoundError(f"Dataset not found: {dataset}")
+
+    with dataset.open(newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames is None:
+            raise ValueError("Dataset has no CSV header")
+
+        missing = [col for col in FACTOR_COLUMNS.values() if col not in reader.fieldnames]
+        if missing:
+            raise ValueError(
+                "Dataset is missing required normalized score columns: "
+                + ", ".join(missing)
+                + ". Inspect the real CSV header and implement a verified mapping; "
+                "do not guess the normalization."
+            )
+
+        output = []
+        for row_number, row in enumerate(reader, start=2):
+            try:
+                values = {
+                    factor: float(row[column])
+                    for factor, column in FACTOR_COLUMNS.items()
+                }
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"Invalid score value on CSV row {row_number}") from exc
+
+            score = calculate_score(**values)
+            output.append({
+                "row_number": row_number,
+                "score": score,
+                "score_accepted": meets_threshold(score, threshold),
+            })
+
+    accepted = sum(item["score_accepted"] for item in output)
+    summary = {
+        "dataset": str(dataset),
+        "threshold": threshold,
+        "rows_evaluated": len(output),
+        "score_accepted": accepted,
+        "score_rejected": len(output) - accepted,
+        "acceptance_rate": accepted / len(output) if output else None,
+        "note": "Score-threshold results only; not a physical hard-gate safety result.",
+    }
+    return output, summary
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dataset", required=True, type=Path)
+    parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
+    parser.add_argument("--output", type=Path, default=ROOT / "results" / "verification_output.csv")
+    args = parser.parse_args()
+
+    rows, summary = evaluate(args.dataset, args.threshold)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+
+    with args.output.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(
+            handle, fieldnames=["row_number", "score", "score_accepted"]
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    summary_path = args.output.with_suffix(".summary.json")
+    summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    print(json.dumps(summary, indent=2))
+    print(f"Per-row output written to: {args.output}")
+    print(f"Summary written to: {summary_path}")
+
+
+if __name__ == "__main__":
+    main()

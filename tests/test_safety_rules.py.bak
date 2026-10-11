@@ -1,0 +1,55 @@
+import unittest
+
+from src.verifier.hard_gate import SafetyLimits, check_hard_gates
+from src.models.seven_dof_arm import within_joint_limits
+
+
+class SafetyRuleTests(unittest.TestCase):
+    def test_safe_values_pass_documented_physical_limits(self):
+        safe, reasons = check_hard_gates(
+            reach_m=0.70,
+            clearance_m=0.025,
+            required_force_N=20.0,
+            com_margin_m=0.025,
+            slip_probability=0.05,
+            joint_torques_Nm=[1.0] * 7,
+            joint_torque_limits_Nm=[2.0] * 7,
+        )
+        self.assertTrue(safe)
+        self.assertEqual(reasons, [])
+
+    def test_low_clearance_is_rejected(self):
+        safe, reasons = check_hard_gates(
+            reach_m=0.70,
+            clearance_m=0.010,
+            required_force_N=20.0,
+            com_margin_m=0.025,
+            slip_probability=0.05,
+            joint_torques_Nm=[1.0] * 7,
+            joint_torque_limits_Nm=[2.0] * 7,
+        )
+        self.assertFalse(safe)
+        self.assertIn("collision_clearance_too_small", reasons)
+
+    def test_missing_torque_limits_fail_explicitly(self):
+        with self.assertRaises(ValueError):
+            check_hard_gates(
+                reach_m=0.70,
+                clearance_m=0.025,
+                required_force_N=20.0,
+                com_margin_m=0.025,
+                slip_probability=0.05,
+                joint_torques_Nm=[1.0] * 7,
+                joint_torque_limits_Nm=[],
+            )
+
+    def test_joint_limit_check(self):
+        self.assertTrue(within_joint_limits(
+            [0, 0, 0, 0, 0, 0, 0],
+            [-1] * 7,
+            [1] * 7,
+        ))
+
+
+if __name__ == "__main__":
+    unittest.main()

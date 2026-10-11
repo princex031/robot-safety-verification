@@ -1,0 +1,58 @@
+Physical Verification Layer for General-Purpose Robot Manipulation
+
+A separate, multi-dimensional pre-execution screening layer that evaluates candidate robotic manipulation actions across critical semantic and physical boundaries.
+This repository contains the evaluation framework, explicit 7-DOF serial-arm model simulations, and synthetic datasets used to characterize a separate pre-execution physical verification gate for general-purpose robotic manipulation.
+
+📌 Project Overview
+
+General-purpose robot manipulation requires proposed actions to be both semantically appropriate and physically executable. This project evaluates a separate pre-execution verification layer that screens candidate manipulation actions along five core physical dimensions:
+• Reachability (R): Workspace bounds and kinematic availability.
+• Collision Clearance (C): Obstacle avoidance and environment tracking.
+• Force Feasibility (F): Load capacities and grasp efficiency under friction constraints.
+• Joint-Torque Feasibility (T): Actuator limits throughout the intended trajectory.
+• Stability (St): Center of mass and structural balance margins.
+
+Verification Architecture
+
+1. Hard Physical Gate: Instantly rejects candidates with non-compensable physical violations.
+2. Weighted Scoring: Candidates that pass the hard gate are evaluated via a composite scoring function:
+\(S=0.20R+0.30C+0.15F+0.15T+0.20St\)
+3. Thresholding: Actions are accepted if \(S \ge \tau\) (default acceptance threshold \(\tau = 0.80\)).
+
+📊 Key Performance Validation Metrics
+
+In the primary manuscript-supplied validation consisting of 20,000 synthetic candidates evaluated at \(\tau = 0.80\):
+
+Metric	Empirical Result
+Ground-Truth Unsafe Actions	17,636
+Ground-Truth Safe Actions	2,364
+Observed Unsafe-Action Detection	100.00%
+Observed False-Safe Rate	0.00%
+Safe-Action Acceptance	68.32% (1,615 accepted)
+False Rejection Rate	31.68% (749 rejected)
+
+Disclaimer: These results characterize verifier behavior under the stated synthetic model. They do not establish a universal real-world safety rate or certification.
+
+## Uncertainty-Aware Safety Verification
+
+This project explores a pre-execution verification layer for robot manipulation. It combines physical constraint checks with a weighted safety score and an uncertainty-aware decision policy.
+
+### Verification workflow
+
+1. **Physical checks:** Evaluate the available reachability, collision, force, torque, grasp, and stability constraints.
+2. **Safety scoring:** Combine normalized risk-related scores using the configured weights and acceptance threshold.
+3. **Uncertainty assessment:** Evaluate score variation across uncertainty samples and flag missing inputs, model disagreement, or unfamiliar operating conditions.
+4. **Decision and recovery:** Accept a candidate only when the configured acceptance conditions are satisfied. Reject candidates with confirmed hard-constraint violations. Request a safer alternative or additional review when evidence is insufficient.
+
+### Decision outcomes
+
+- `ACCEPT` — the candidate passes the configured checks and uncertainty policy.
+- `REJECT` — a reported hard physical constraint is violated.
+- `REQUEST_ALTERNATIVE` — the candidate does not meet the configured acceptance policy; a lower-risk candidate should be generated and re-verified.
+- `REVIEW` — required evidence is missing, model predictions disagree, or the input falls outside the validated operating range.
+
+### Scope and limitations
+
+This is a research prototype, not a certified robot-safety system. Its decisions depend on the quality of the physical models, input measurements, score normalization, and uncertainty samples. Uncertainty sampling alone does not establish calibrated probabilities or guarantee real-world safety.
+
+Reported paper results should be clearly distinguished from results independently reproduced by this implementation. Exact reproduction requires the original experimental code, data, configuration, and evaluation procedure. Hardware deployment requires separate validation and appropriate safety controls.

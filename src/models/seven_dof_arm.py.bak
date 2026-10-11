@@ -1,0 +1,30 @@
+"""Small, transparent seven-joint arm utility.
+
+This is not a full kinematics simulator. Link dimensions and joint limits must
+be transcribed from the source paper before claiming paper-level reproduction.
+"""
+
+
+def validate_seven_joint_values(values: list[float], label: str = "values") -> None:
+    if len(values) != 7:
+        raise ValueError(f"{label} must contain exactly 7 values")
+    if any(not isinstance(v, (int, float)) for v in values):
+        raise ValueError(f"Every {label} entry must be numeric")
+
+
+def within_joint_limits(
+    joint_values: list[float],
+    lower_limits: list[float],
+    upper_limits: list[float],
+) -> bool:
+    validate_seven_joint_values(joint_values, "joint_values")
+    validate_seven_joint_values(lower_limits, "lower_limits")
+    validate_seven_joint_values(upper_limits, "upper_limits")
+
+    if any(lo > hi for lo, hi in zip(lower_limits, upper_limits)):
+        raise ValueError("A lower joint limit exceeds its upper limit")
+
+    return all(
+        lo <= value <= hi
+        for value, lo, hi in zip(joint_values, lower_limits, upper_limits)
+    )

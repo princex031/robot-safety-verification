@@ -1,0 +1,21 @@
+{
+  "threshold": 0.80,
+  "score_weights": {
+    "reachability": 0.20,
+    "collision": 0.30,
+    "force": 0.15,
+    "torque": 0.15,
+    "stability": 0.20
+  },
+  "limits": {
+    "max_reach_m": 0.72,
+    "min_clearance_m": 0.020,
+    "max_required_force_N": 40.0,
+    "min_com_margin_m": 0.020,
+    "max_slip_probability": 0.10
+  },
+  "random_seed_reported": 260929,
+  "joint_torque_limits_Nm": null,
+  "normalization": "Not fully specified in available paper text; must be verified",
+  "reproduction_status": "Not yet reproduced"
+}

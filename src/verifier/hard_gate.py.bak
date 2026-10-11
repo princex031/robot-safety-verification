@@ -1,0 +1,53 @@
+"""Physical hard gates based on the documented paper thresholds."""
+
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class SafetyLimits:
+    max_reach_m: float = 0.72
+    min_clearance_m: float = 0.020
+    max_required_force_N: float = 40.0
+    min_com_margin_m: float = 0.020
+    max_slip_probability: float = 0.10
+
+
+def check_hard_gates(
+    *,
+    reach_m: float,
+    clearance_m: float,
+    required_force_N: float,
+    com_margin_m: float,
+    slip_probability: float,
+    joint_torques_Nm: list[float],
+    joint_torque_limits_Nm: list[float],
+    limits: SafetyLimits = SafetyLimits(),
+) -> tuple[bool, list[str]]:
+    """Return (safe, rejection_reasons); torque limits must come from a source."""
+    if len(joint_torques_Nm) != len(joint_torque_limits_Nm):
+        raise ValueError("Torque values and torque limits must have equal lengths")
+    if not joint_torque_limits_Nm:
+        raise ValueError("Provide verified joint torque limits before checking safety")
+
+    reasons = []
+
+    if reach_m > limits.max_reach_m:
+        reasons.append("reach_limit_exceeded")
+    if clearance_m < limits.min_clearance_m:
+        reasons.append("collision_clearance_too_small")
+    if required_force_N > limits.max_required_force_N:
+        reasons.append("required_force_exceeded")
+    if com_margin_m < limits.min_com_margin_m:
+        reasons.append("center_of_mass_margin_too_small")
+    if slip_probability > limits.max_slip_probability:
+        reasons.append("slip_probability_too_high")
+
+    for index, (torque, limit) in enumerate(
+        zip(joint_torques_Nm, joint_torque_limits_Nm), start=1
+    ):
+        if limit <= 0:
+            raise ValueError(f"Joint {index} torque limit must be positive")
+        if abs(torque) > limit:
+            reasons.append(f"joint_{index}_torque_exceeded")
+
+    return not reasons, reasons

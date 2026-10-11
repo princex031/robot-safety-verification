@@ -1,0 +1,30 @@
+{
+  "experiment_type": "independent_synthetic_reconstruction",
+  "original_paper_exact_reproduction": false,
+  "candidate_count": 20000,
+  "random_seed": 260929,
+  "score_threshold": 0.8,
+  "score_weights": {
+    "reachability": 0.2,
+    "collision": 0.3,
+    "force": 0.15,
+    "torque": 0.15,
+    "stability": 0.2
+  },
+  "safe_candidates": 124,
+  "unsafe_candidates": 19876,
+  "accepted_candidates": 0,
+  "false_safe_count": 0,
+  "false_rejection_count": 124,
+  "false_safe_rate_percent": 0.0,
+  "false_rejection_rate_percent": 100.0,
+  "mean_weighted_score": 0.43862525393127927,
+  "dataset_csv": "data\\generated_reconstruction_20k.csv",
+  "assumptions": [
+    "Uniform sampling over the documented mass, friction and efficiency ranges.",
+    "Uniform sampling for reach, clearance, torque ratios, COM margin and slip probability.",
+    "Score-normalization maps are explicit illustrative assumptions.",
+    "Torque ratios are synthetic; full seven-DOF robot dynamics are not simulated.",
+    "Results must not be presented as the original paper's reported results."
+  ]
+}

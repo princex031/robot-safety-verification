@@ -1,0 +1,20 @@
+{
+  "seed": 260929,
+  "candidate_count": 20000,
+  "threshold": 0.8,
+  "score_weights": {
+    "reachability": 0.2,
+    "collision": 0.3,
+    "force": 0.15,
+    "torque": 0.15,
+    "stability": 0.2
+  },
+  "documented_limits": {
+    "max_reach_m": 0.72,
+    "min_clearance_m": 0.02,
+    "max_force_n": 40.0,
+    "min_com_margin_m": 0.02,
+    "max_slip_probability": 0.1
+  },
+  "status": "assumption-based; not exact reproduction"
+}

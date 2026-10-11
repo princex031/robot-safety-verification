@@ -1,0 +1,29 @@
+import unittest
+
+from src.verifier.scorer import calculate_score, meets_threshold
+
+
+class ScoringTests(unittest.TestCase):
+    def test_all_ones_score_one(self):
+        self.assertAlmostEqual(calculate_score(1, 1, 1, 1, 1), 1.0)
+
+    def test_all_zeros_score_zero(self):
+        self.assertAlmostEqual(calculate_score(0, 0, 0, 0, 0), 0.0)
+
+    def test_paper_weights_sum_to_one(self):
+        from src.verifier.scorer import WEIGHTS
+        self.assertAlmostEqual(sum(WEIGHTS.values()), 1.0)
+
+    def test_threshold_boundary_is_accepted(self):
+        self.assertTrue(meets_threshold(0.80, 0.80))
+
+    def test_below_threshold_is_rejected(self):
+        self.assertFalse(meets_threshold(0.79, 0.80))
+
+    def test_out_of_range_factor_rejected(self):
+        with self.assertRaises(ValueError):
+            calculate_score(1.1, 1, 1, 1, 1)
+
+
+if __name__ == "__main__":
+    unittest.main()
