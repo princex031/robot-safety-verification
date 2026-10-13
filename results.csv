@@ -1,0 +1,4 @@
+reachability,clearance,force,torque,stability,decision,score,hard_gate_passed,reasons
+0.9,0.8,0.2,0.3,0.9,REJECT,0.675,True,Score below threshold
+0.7,0.6,0.4,0.5,0.8,REJECT,0.615,True,Score below threshold
+0.4,0.3,0.9,0.8,0.4,REJECT,0.505,True,Score below threshold
