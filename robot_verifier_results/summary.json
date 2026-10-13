@@ -1,0 +1,35 @@
+{
+  "seed": 20261012,
+  "proposals_per_scenario": 20000,
+  "total_proposals": 80000,
+  "scenario_metadata": {
+    "seen_robot_train_env": {
+      "radius_m": 0.25,
+      "distribution": "train",
+      "seed": 1001,
+      "input_unsafe_rate": 0.36845
+    },
+    "heldout_larger_robot": {
+      "radius_m": 0.35,
+      "distribution": "transfer",
+      "seed": 1002,
+      "input_unsafe_rate": 0.603
+    },
+    "heldout_smaller_robot": {
+      "radius_m": 0.15,
+      "distribution": "transfer",
+      "seed": 1003,
+      "input_unsafe_rate": 0.36765
+    },
+    "stress_environment": {
+      "radius_m": 0.3,
+      "distribution": "stress",
+      "seed": 1004,
+      "input_unsafe_rate": 0.80435
+    }
+  },
+  "python": "3.14.7",
+  "numpy": "2.5.2",
+  "pandas": "3.0.5",
+  "limitation": "Synthetic clearance benchmark only; not a physics simulator, physical robot validation, or formal safety guarantee."
+}

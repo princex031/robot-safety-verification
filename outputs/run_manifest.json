@@ -1,0 +1,8 @@
+{
+  "seed": 260929,
+  "episodes_per_main_experiment": 1000,
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "config_sha256": "c1940eeab26a1ab48a64617ab3f28d2e021677214322747ed76a3df949efc1b3",
+  "summary_sha256": "8765c8850bbd28ea139e056eec176521946a3d1a13b704237823115dd1fa269f",
+  "note": "Synthetic model outputs; not proof of physical robot safety."
+}

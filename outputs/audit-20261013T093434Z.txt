@@ -1,0 +1,127 @@
+=== ROBOT SAFETY REPOSITORY AUDIT ===
+UTC: 20261013T093434Z
+ROOT: C:/Users/als/OneDrive/Documents/GitHub/robot-safety-verification
+
+=== GIT STATUS ===
+?? configs/experiment_protocol.json
+?? robot_verifier_results/
+?? scripts/ultimate_check.sh
+?? simulator/
+?? tests/test_experiment_suite.py
+
+=== TRACKED FILE INVENTORY ===
+README.md
+README.md.bak
+ablation/README.md
+ablation/evaluate_noise.py
+ablation/evaluate_noise.py.bak
+ablation/run_ablation.py
+ablation/run_ablation.py.bak
+baselines/README.md
+baselines/README.md.bak
+bootstrap_all.sh
+configs/experiment_config.json
+configs/experiment_config.json.bak
+data/generated_reconstruction_20k.csv
+docs/research_spec.md
+requirements.txt
+results/final_summary.json
+results/independent_reconstruction_summary.json
+results/reconstruction_assumptions.json
+scripts/__pycache__/run_full_experiment.cpython-314.pyc
+scripts/bootstrap_project.sh
+scripts/run_full_experiment.py
+scripts/run_verification.sh
+scripts/run_verification.sh.bak
+src/__init__.py
+src/__pycache__/__init__.cpython-314.pyc
+src/__pycache__/main.cpython-314.pyc
+src/__pycache__/safety_verification.cpython-314.pyc
+src/main.py
+src/main.py.bak
+src/models/__init__.py
+src/models/__pycache__/__init__.cpython-314.pyc
+src/models/__pycache__/seven_dof_arm.cpython-314.pyc
+src/models/seven_dof_arm.py
+src/models/seven_dof_arm.py.bak
+src/safety_verification.py
+src/safety_verification.py.bak
+src/utils/__init__.py
+src/utils/__pycache__/__init__.cpython-314.pyc
+src/verifier/__init__.py
+src/verifier/__pycache__/__init__.cpython-314.pyc
+src/verifier/__pycache__/hard_gate.cpython-314.pyc
+src/verifier/__pycache__/scorer.cpython-314.pyc
+src/verifier/__pycache__/uncertainty.cpython-314.pyc
+src/verifier/hard_gate.py
+src/verifier/hard_gate.py.bak
+src/verifier/scorer.py
+src/verifier/scorer.py.bak
+src/verifier/uncertainty.py
+tests/__pycache__/test_safety_rules.cpython-314.pyc
+tests/__pycache__/test_scoring.cpython-314.pyc
+tests/test_safety_rules.py
+tests/test_safety_rules.py.bak
+tests/test_scoring.py
+tests/test_scoring.py.bak
+
+=== PYTHON VERSION ===
+Python 3.14.7
+
+=== SYNTAX CHECK ===
+
+=== UNIT TESTS ===
+test_deterministic_sampling (test_experiment_suite.SimulatorTests.test_deterministic_sampling) ... ok
+test_label_is_boolean (test_experiment_suite.SimulatorTests.test_label_is_boolean) ... ok
+test_metrics_sum (test_experiment_suite.SimulatorTests.test_metrics_sum) ... ok
+test_weighted_score_in_range (test_experiment_suite.SimulatorTests.test_weighted_score_in_range) ... ok
+test_weights_sum_to_one (test_experiment_suite.SimulatorTests.test_weights_sum_to_one) ... ok
+test_clearance_failure (test_safety_rules.SafetyTests.test_clearance_failure) ... ok
+test_safe_example (test_safety_rules.SafetyTests.test_safe_example) ... ok
+test_seven_joint_limits (test_safety_rules.SafetyTests.test_seven_joint_limits) ... ok
+test_torque_limit_required (test_safety_rules.SafetyTests.test_torque_limit_required) ... ok
+test_all_ones (test_scoring.ScoringTests.test_all_ones) ... ok
+test_all_zeros (test_scoring.ScoringTests.test_all_zeros) ... ok
+test_rejects_out_of_range_factor (test_scoring.ScoringTests.test_rejects_out_of_range_factor) ... ok
+test_threshold_boundary (test_scoring.ScoringTests.test_threshold_boundary) ... ok
+test_weights_sum_to_one (test_scoring.ScoringTests.test_weights_sum_to_one) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.015s
+
+OK
+
+=== SMALL SMOKE EXPERIMENT ===
+Generated 43 experiment summary rows.
+Results: C:\Users\als\OneDrive\Documents\GitHub\robot-safety-verification\outputs\experiment_summary.csv
+Manifest: C:\Users\als\OneDrive\Documents\GitHub\robot-safety-verification\outputs\run_manifest.json
+
+=== HASHES ===
+9bcf6a644c60f39ff1cd17d307c04dac46cc471dbbd36ea1b9adf0461fa49cc2 *configs/experiment_config.json
+93841986971c080ca127ae86d28488fcaefb11f8790c3a07827e42a8c6a9dd98 *configs/experiment_config.json.bak
+c1940eeab26a1ab48a64617ab3f28d2e021677214322747ed76a3df949efc1b3 *configs/experiment_protocol.json
+460d4f587b925eb95592cc322af1a62fd6ff8e93de5cc7b026c3cb0f2ec782e6 *scripts/__pycache__/run_full_experiment.cpython-314.pyc
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 *scripts/bootstrap_project.sh
+c0e66958e0dd682a0115b4f60bd4018fc8445c96407d073ddf66114edf74ddc6 *scripts/run_full_experiment.py
+cb03ecb28438292c3c44749ebf98ebf9e39139c28a57522cede045b5e15c7f88 *scripts/run_verification.sh
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 *scripts/run_verification.sh.bak
+0f42ba280bca120bb96949f77e6dfc3d5d54e9d293794195463f282d19dde620 *scripts/ultimate_check.sh
+f1552adf2807e4d772206e6962943e9272832d747ff09baf347043be1a253db2 *simulator/__pycache__/experiment_suite.cpython-314.pyc
+d0da4df8e8c44aac428d061f3d523240c8bdbd821e629f87dc22238ef42ddb4d *simulator/experiment_suite.py
+0d01b07416e1d4021494855e40f2fe03d5fbedb92469ec7784208b0855ccc64a *tests/__pycache__/test_experiment_suite.cpython-314.pyc
+59962493e538570249d4db774635fe4100196f2aabdde89d096f725612d05549 *tests/__pycache__/test_safety_rules.cpython-314.pyc
+6dcccf7deb3a668f690d41dc40a79ba7164c320994765e857f0da23c742b7a80 *tests/__pycache__/test_scoring.cpython-314.pyc
+93754ae4ccfe6aafa9e68addeab4050b3f7a292a03ca4118a2f490273652c838 *tests/test_experiment_suite.py
+f6fff75bde652f5b7299e03cefde6e7fb934c01e0a0e1b55694132bc497a4752 *tests/test_safety_rules.py
+2aa3290587d699219ac10a6833f40136f8791933c15948d93fb9acf1307837e1 *tests/test_safety_rules.py.bak
+16ec3cfdefc4a09388d4562f6ec197ed794121a0855cc23302580d7e816349ca *tests/test_scoring.py
+9118a0269385d7728b220213c89ab5f5cb41e9f13743166215c9d6c360f80772 *tests/test_scoring.py.bak
+
+=== OUTPUT FILES ===
+outputs/audit-20261013T093434Z.txt (5677 bytes)
+outputs/experiment_summary.csv (6853 bytes)
+outputs/primary_episode_sample.csv (230116 bytes)
+outputs/run_manifest.json (412 bytes)
+
+Audit finished. Report: outputs/audit-20261013T093434Z.txt
+NOTE: smoke test uses 1000 episodes; run full suite separately.

@@ -1,0 +1,89 @@
+========================================================================
+PAPER AUDIT: EXPERIMENT EVIDENCE + RESULTS VERIFICATION
+========================================================================
+Project: C:\Users\als\OneDrive\Documents\GitHub\robot-safety-verification\robot_verifier_results
+Files inventoried: 3
+
+ISSUE 1 — ORIGINAL EXPERIMENT AND PAPER CLAIMS
+------------------------------------------------------------------------
+20000:
+  benchmark.py
+  summary.json
+20,000:
+  No text match found.
+7-dof:
+  No text match found.
+seven-joint:
+  No text match found.
+reachability:
+  No text match found.
+trajectory clearance:
+  No text match found.
+torque:
+  No text match found.
+stability:
+  No text match found.
+normalization:
+  No text match found.
+sampling:
+  No text match found.
+candidate:
+  No text match found.
+bootstrap_all:
+  No text match found.
+experiment:
+  No text match found.
+
+Potential data files found: 1
+  results.csv
+
+Claim-evidence cautions:
+* A seven-joint value checker is not by itself a full kinematics simulator.
+* A scorer for existing rows does not prove 20,000 candidates were generated.
+* A filename or keyword match does not prove an experiment was executed.
+* Table reproduction needs the original data, executable logic, parameters,
+  normalization, sampling method, and documented output.
+* This audit does not invent missing experiments or alter the paper.
+
+ISSUE 2 — REPORTED RESULTS
+------------------------------------------------------------------------
+Reported total: 2364
+Accepted: 1615
+Rejected: 749
+Counts reconcile: True
+Acceptance: 68.3164%
+Rejection:  31.6836%
+These percentages verify arithmetic, not the underlying experiment.
+A rejected action is not automatically a false rejection.
+
+Independent ground-truth CSV check
+Required exact columns: ground_truth_unsafe,predicted_unsafe
+Labels: 1 = unsafe, 0 = safe
+False-safe means ground truth is unsafe but prediction says safe.
+
+No CSV with the required independent-label columns was found (CSV files examined: 1).
+No independent false-safe rate can be established from arithmetic alone.
+Adapt the column names only after confirming the dataset's real semantics.
+
+DISCREPANCY REVIEW
+------------------------------------------------------------------------
+The separately reported 7.62% false-safe result must be traced to its
+dataset, ground-truth source, denominator, and decision labels.
+Do not average or silently replace conflicting results.
+If methods or denominators differ, report them explicitly and explain why.
+If the original executable or dataset is unavailable, say so and narrow
+the paper's claims to what can be reproduced.
+
+REPRODUCIBILITY MANIFEST — SHA-256
+------------------------------------------------------------------------
+71f9e47224898b9ea14129d1d4ca687da974e376eb7e13276cd8f1e0647e658e  benchmark.py
+4943851b582a1ccd58a701f80d71724002d53e818b1764c047dcceb3e5b698ad  results.csv
+533b5b67e2cf784915f95bb6630a152dee409fe389e4e5aa5b7606fa4a7c476d  summary.json
+Files hashed: 3
+
+FINAL STATUS
+------------------------------------------------------------------------
+This script audits available evidence and checks labelled CSVs where
+the required columns exist. It does not claim to execute or reproduce
+an unknown original experiment automatically.
+Review findings before changing scientific claims.
