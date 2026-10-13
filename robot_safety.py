@@ -1,13 +1,26 @@
 #!/usr/bin/env python3
+"""
+Robot Safety Verification Toolkit
+---------------------------------
+A standalone, dependency-free screening tool.
+
+IMPORTANT:
+- Metrics must be normalized safety scores in [0, 1].
+- Higher scores mean safer for this screening model.
+- This is NOT a physics simulator or certified robot safety controller.
+- Real deployment requires robot-specific units, calibrated thresholds,
+  validated dynamics, collision checking, and independent safety systems.
+"""
+
 import argparse
 import csv
-import json
 import math
+import sys
 from pathlib import Path
 
-METRICS = ("reachability", "clearance", "force", "torque", "stability")
+VERSION = "2.0.0"
 
-WEIGHTS = {
+METRICS = {
     "reachability": 0.20,
     "clearance": 0.30,
     "force": 0.15,
@@ -15,331 +28,350 @@ WEIGHTS = {
     "stability": 0.20,
 }
 
-GATES = (
-    "reachability_ok",
-    "clearance_ok",
-    "force_ok",
-    "torque_ok",
-    "stability_ok",
-)
+DEFAULT_THRESHOLD = 0.70
+MIN_METRIC = 0.0
+MAX_METRIC = 1.0
+
+# Generic example limits in radians. Replace with your actual robot's
+# manufacturer-specified joint limits before using real hardware.
+DEFAULT_JOINT_LIMITS = [(-math.pi, math.pi)] * 7
 
 
-def number(value, name):
+class SafetyInputError(ValueError):
+    """Raised when input data is invalid."""
+
+
+def parse_finite_number(value, name):
     try:
         result = float(value)
     except (TypeError, ValueError):
-        raise ValueError(f"{name} must be numeric") from None
+        raise SafetyInputError(f"{name}: expected a number, got {value!r}")
 
     if not math.isfinite(result):
-        raise ValueError(f"{name} must be finite")
+        raise SafetyInputError(f"{name}: NaN and infinity are not allowed")
 
     return result
 
 
-def validate_metrics(metrics):
-    if not isinstance(metrics, dict):
-        raise ValueError("Metrics must be a JSON object")
+def validate_metrics(row):
+    """Validate and return the five normalized safety scores."""
+    validated = {}
 
-    missing = [
-        key for key in METRICS
-        if key not in metrics or metrics[key] in (None, "")
-    ]
+    for name in METRICS:
+        if name not in row or row[name] is None or str(row[name]).strip() == "":
+            raise SafetyInputError(f"Missing required metric: {name}")
 
-    if missing:
-        raise ValueError("Missing metrics: " + ", ".join(missing))
+        value = parse_finite_number(row[name], name)
 
-    values = {}
+        if not MIN_METRIC <= value <= MAX_METRIC:
+            raise SafetyInputError(
+                f"{name} must be between 0 and 1; received {value}"
+            )
 
-    for key in METRICS:
-        value = number(metrics[key], key)
+        validated[name] = value
 
-        if not 0 <= value <= 1:
-            raise ValueError(f"{key} must be between 0 and 1")
-
-        values[key] = value
-
-    return values
+    return validated
 
 
 def score_action(metrics):
-    values = validate_metrics(metrics)
-    return sum(values[k] * WEIGHTS[k] for k in METRICS)
-
-
-def verify_action(
-    metrics,
-    gates=None,
-    uncertainty=None,
-    threshold=0.80,
-):
-    if not 0 <= threshold <= 1:
-        raise ValueError("Threshold must be between 0 and 1")
-
-    try:
-        values = validate_metrics(metrics)
-        score = score_action(values)
-    except ValueError as error:
-        return {
-            "decision": "REVIEW",
-            "score": None,
-            "hard_gate_passed": False,
-            "reasons": [str(error)],
-        }
-
-    gates = gates or {}
-    reasons = []
-
-    failed = [
-        key for key in GATES
-        if gates.get(key) is False
-    ]
-
-    hard_gate_passed = not failed
-
-    if failed:
-        reasons.extend(
-            f"{key}: constraint failed" for key in failed
-        )
-
-    if uncertainty is not None:
-        try:
-            uncertainty = number(uncertainty, "uncertainty")
-            if not 0 <= uncertainty <= 1:
-                raise ValueError(
-                    "Uncertainty must be between 0 and 1"
-                )
-        except ValueError as error:
-            return {
-                "decision": "REVIEW",
-                "score": round(score, 6),
-                "hard_gate_passed": hard_gate_passed,
-                "reasons": reasons + [str(error)],
-            }
-
-    if not hard_gate_passed:
-        decision = "REJECT"
-    elif uncertainty is not None and uncertainty >= 0.5:
-        decision = "REVIEW"
-        reasons.append("Uncertainty requires review")
-    elif score >= threshold:
-        decision = "ACCEPT"
-        reasons.append("Score meets threshold")
-    else:
-        decision = "REJECT"
-        reasons.append("Score below threshold")
-
-    return {
-        "decision": decision,
-        "score": round(score, 6),
-        "hard_gate_passed": hard_gate_passed,
-        "metric_scores": values,
-        "uncertainty": uncertainty,
-        "reasons": reasons,
-    }
-
-
-def validate_joints(values, lower, upper, expected_dof=7):
-    try:
-        values = [number(x, "joint") for x in values]
-        lower = [number(x, "lower limit") for x in lower]
-        upper = [number(x, "upper limit") for x in upper]
-    except ValueError as error:
-        return {"valid": False, "reasons": [str(error)]}
-
-    if not (len(values) == len(lower) == len(upper)):
-        return {
-            "valid": False,
-            "reasons": ["Joint arrays must have equal lengths"],
-        }
-
-    if expected_dof is not None and len(values) != expected_dof:
-        return {
-            "valid": False,
-            "reasons": [f"Expected {expected_dof} joints"],
-        }
-
-    if any(lo > hi for lo, hi in zip(lower, upper)):
-        return {
-            "valid": False,
-            "reasons": ["Invalid joint limits"],
-        }
-
-    violations = [
-        i + 1
-        for i, (q, lo, hi) in enumerate(
-            zip(values, lower, upper)
-        )
-        if q < lo or q > hi
-    ]
-
-    return {
-        "valid": not violations,
-        "joint_count": len(values),
-        "violating_joint_indices": violations,
-        "reasons": (
-            [f"Joint limit violations: {violations}"]
-            if violations else []
-        ),
-    }
-
-
-def evaluate_csv(input_file, output_file, threshold=0.80):
-    results = []
-
-    with open(
-        input_file, newline="", encoding="utf-8-sig"
-    ) as source:
-        reader = csv.DictReader(source)
-
-        if not reader.fieldnames:
-            raise ValueError("CSV header is missing")
-
-        for line, row in enumerate(reader, start=2):
-            gates = {}
-
-            for key in GATES:
-                raw = (row.get(key) or "").strip().lower()
-
-                if raw:
-                    if raw not in {
-                        "true", "false", "1", "0", "yes", "no"
-                    }:
-                        raise ValueError(
-                            f"Line {line}: invalid boolean for {key}"
-                        )
-
-                    gates[key] = raw in {"true", "1", "yes"}
-
-            raw_uncertainty = (
-                row.get("uncertainty") or ""
-            ).strip()
-
-            try:
-                uncertainty = (
-                    float(raw_uncertainty)
-                    if raw_uncertainty else None
-                )
-            except ValueError:
-                uncertainty = float("nan")
-
-            result = verify_action(
-                {key: row.get(key) for key in METRICS},
-                gates=gates,
-                uncertainty=uncertainty,
-                threshold=threshold,
-            )
-
-            output_row = dict(row)
-            output_row["decision"] = result["decision"]
-            output_row["score"] = (
-                "" if result["score"] is None
-                else result["score"]
-            )
-            output_row["hard_gate_passed"] = (
-                result["hard_gate_passed"]
-            )
-            output_row["reasons"] = " | ".join(
-                result["reasons"]
-            )
-
-            results.append(output_row)
-
-    destination = Path(output_file)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-
-    if results:
-        with destination.open(
-            "w", newline="", encoding="utf-8"
-        ) as target:
-            writer = csv.DictWriter(
-                target, fieldnames=list(results[0].keys())
-            )
-            writer.writeheader()
-            writer.writerows(results)
-
-    summary = {
-        "rows_evaluated": len(results),
-        "accepted": sum(
-            r["decision"] == "ACCEPT" for r in results
-        ),
-        "rejected": sum(
-            r["decision"] == "REJECT" for r in results
-        ),
-        "review": sum(
-            r["decision"] == "REVIEW" for r in results
-        ),
-        "threshold": threshold,
-    }
-
-    destination.with_suffix(".summary.json").write_text(
-        json.dumps(summary, indent=2),
-        encoding="utf-8",
+    """Calculate a weighted screening score from 0 to 1."""
+    validated = validate_metrics(metrics)
+    return sum(
+        validated[name] * weight
+        for name, weight in METRICS.items()
     )
 
-    return summary
+
+def verify_action(metrics, threshold=DEFAULT_THRESHOLD):
+    """Return a transparent screening decision and reasons."""
+    threshold = parse_finite_number(threshold, "threshold")
+    if not 0.0 <= threshold <= 1.0:
+        raise SafetyInputError("threshold must be between 0 and 1")
+
+    validated = validate_metrics(metrics)
+    score = score_action(validated)
+
+    # Conservative per-metric floor prevents a strong average from
+    # hiding a very poor individual safety metric.
+    weak_metrics = [
+        name for name, value in validated.items()
+        if value < threshold
+    ]
+
+    passed = score >= threshold and not weak_metrics
+
+    return {
+        "score": round(score, 6),
+        "threshold": threshold,
+        "decision": "PASS_SCREEN" if passed else "REJECT_SCREEN",
+        "weak_metrics": ";".join(weak_metrics),
+        "reason": (
+            "All screening checks passed"
+            if passed
+            else (
+                "Below threshold: " + ", ".join(weak_metrics)
+                if weak_metrics
+                else "Weighted score below threshold"
+            )
+        ),
+    }
+
+
+def validate_joints(values, limits=None):
+    """Check exactly seven joint values against supplied limits."""
+    if limits is None:
+        limits = DEFAULT_JOINT_LIMITS
+
+    if len(values) != 7:
+        raise SafetyInputError(
+            f"Expected exactly 7 joint values; received {len(values)}"
+        )
+
+    if len(limits) != 7:
+        raise SafetyInputError("Exactly 7 joint-limit pairs are required")
+
+    parsed = [
+        parse_finite_number(value, f"joint_{index + 1}")
+        for index, value in enumerate(values)
+    ]
+
+    violations = []
+
+    for index, (value, pair) in enumerate(zip(parsed, limits), start=1):
+        lower, upper = pair
+
+        if not (
+            math.isfinite(lower)
+            and math.isfinite(upper)
+            and lower < upper
+        ):
+            raise SafetyInputError(
+                f"Invalid limits for joint {index}: {pair}"
+            )
+
+        if value < lower or value > upper:
+            violations.append(
+                f"joint_{index}={value} outside [{lower}, {upper}]"
+            )
+
+    return {
+        "decision": "PASS_LIMITS" if not violations else "REJECT_LIMITS",
+        "joint_count": len(parsed),
+        "violations": "; ".join(violations),
+    }
+
+
+def evaluate_csv(input_file, output_file, threshold=DEFAULT_THRESHOLD):
+    """Evaluate every CSV row and save decisions to a new CSV file."""
+    source = Path(input_file)
+    destination = Path(output_file)
+
+    if not source.is_file():
+        raise FileNotFoundError(f"Input CSV not found: {source}")
+
+    if source.resolve() == destination.resolve():
+        raise SafetyInputError(
+            "Input and output files must differ; refusing to overwrite input"
+        )
+
+    required = set(METRICS)
+    results = []
+    errors = 0
+
+    with source.open("r", newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+
+        if not reader.fieldnames:
+            raise SafetyInputError("CSV is empty or has no header row")
+
+        missing = required - set(reader.fieldnames)
+        if missing:
+            raise SafetyInputError(
+                "CSV is missing required columns: "
+                + ", ".join(sorted(missing))
+            )
+
+        for line_number, row in enumerate(reader, start=2):
+            result = {
+                "row_number": line_number,
+                "candidate_id": (
+                    row.get("candidate_id", "").strip()
+                    or str(line_number - 1)
+                ),
+            }
+
+            try:
+                decision = verify_action(row, threshold)
+                result.update(decision)
+                result["error"] = ""
+            except SafetyInputError as exc:
+                errors += 1
+                result.update({
+                    "score": "",
+                    "threshold": threshold,
+                    "decision": "INVALID_INPUT",
+                    "weak_metrics": "",
+                    "reason": "Invalid input",
+                    "error": str(exc),
+                })
+
+            results.append(result)
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+
+    columns = [
+        "row_number", "candidate_id", *METRICS,
+        "score", "threshold", "decision",
+        "weak_metrics", "reason", "error",
+    ]
+
+    with destination.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns)
+        writer.writeheader()
+
+        for result in results:
+            # Preserve input metric values in the report.
+            original_row = {}
+            with source.open(
+                "r", newline="", encoding="utf-8-sig"
+            ) as source_handle:
+                original_reader = csv.DictReader(source_handle)
+                for _ in range(result["row_number"] - 2):
+                    next(original_reader, None)
+                original_row = next(original_reader, {}) or {}
+
+            output_row = {
+                key: original_row.get(key, "")
+                for key in METRICS
+            }
+            output_row.update(result)
+            writer.writerow(output_row)
+
+    passed = sum(
+        result.get("decision") == "PASS_SCREEN" for result in results
+    )
+    rejected = sum(
+        result.get("decision") == "REJECT_SCREEN" for result in results
+    )
+
+    print(f"Version: {VERSION}")
+    print(f"Rows processed: {len(results)}")
+    print(f"Passed screening: {passed}")
+    print(f"Rejected screening: {rejected}")
+    print(f"Invalid rows: {errors}")
+    print(f"Output saved: {destination}")
+
+    if errors:
+        print("Review the 'error' column before relying on these results.")
+
+
+def run_self_tests():
+    """Small deterministic tests for the core validation logic."""
+    good = {
+        "reachability": 0.95,
+        "clearance": 0.95,
+        "force": 0.95,
+        "torque": 0.95,
+        "stability": 0.95,
+    }
+    result = verify_action(good)
+    assert result["decision"] == "PASS_SCREEN"
+
+    bad = dict(good, clearance=0.10)
+    assert verify_action(bad)["decision"] == "REJECT_SCREEN"
+
+    for invalid in (
+        dict(good, force=float("nan")),
+        dict(good, torque=float("inf")),
+        dict(good, stability=1.5),
+    ):
+        try:
+            verify_action(invalid)
+        except SafetyInputError:
+            pass
+        else:
+            raise AssertionError("Invalid metric was not rejected")
+
+    assert validate_joints([0] * 7)["decision"] == "PASS_LIMITS"
+
+    try:
+        validate_joints([0] * 6)
+    except SafetyInputError:
+        pass
+    else:
+        raise AssertionError("Wrong joint count was not rejected")
+
+    print("All self-tests passed.")
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    commands = parser.add_subparsers(
-        dest="command", required=True
+    parser = argparse.ArgumentParser(
+        description="Standalone robot safety screening toolkit"
+    )
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {VERSION}"
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    csv_parser = subparsers.add_parser(
+        "csv", help="Evaluate normalized metric scores from CSV"
+    )
+    csv_parser.add_argument("--input", required=True)
+    csv_parser.add_argument("--output", default="results.csv")
+    csv_parser.add_argument(
+        "--threshold", type=float, default=DEFAULT_THRESHOLD
     )
 
-    verify = commands.add_parser("verify")
-    verify.add_argument("--metrics", required=True)
-    verify.add_argument("--gates", default="{}")
-    verify.add_argument("--uncertainty", type=float)
-    verify.add_argument("--threshold", type=float, default=0.80)
+    verify_parser = subparsers.add_parser(
+        "verify", help="Verify one candidate's normalized scores"
+    )
+    for metric in METRICS:
+        verify_parser.add_argument(
+            f"--{metric}", type=float, required=True
+        )
+    verify_parser.add_argument(
+        "--threshold", type=float, default=DEFAULT_THRESHOLD
+    )
 
-    joints = commands.add_parser("joints")
-    joints.add_argument("--values", required=True)
-    joints.add_argument("--lower", required=True)
-    joints.add_argument("--upper", required=True)
-    joints.add_argument("--dof", type=int, default=7)
+    joints_parser = subparsers.add_parser(
+        "joints", help="Check seven joint values against example limits"
+    )
+    joints_parser.add_argument(
+        "values", nargs=7, type=float, metavar="JOINT_RAD"
+    )
 
-    batch = commands.add_parser("csv")
-    batch.add_argument("--input", required=True)
-    batch.add_argument("--output", required=True)
-    batch.add_argument("--threshold", type=float, default=0.80)
+    subparsers.add_parser("self-test", help="Run built-in tests")
 
     args = parser.parse_args()
 
     try:
-        if args.command == "verify":
-            result = verify_action(
-                json.loads(args.metrics),
-                json.loads(args.gates),
-                args.uncertainty,
-                args.threshold,
-            )
-            print(json.dumps(result, indent=2))
-            return 0 if result["decision"] == "ACCEPT" else 2
-
-        if args.command == "joints":
-            result = validate_joints(
-                json.loads(args.values),
-                json.loads(args.lower),
-                json.loads(args.upper),
-                args.dof,
-            )
-            print(json.dumps(result, indent=2))
-            return 0 if result["valid"] else 2
-
         if args.command == "csv":
-            print(json.dumps(
-                evaluate_csv(
-                    args.input, args.output, args.threshold
-                ),
-                indent=2,
-            ))
-            return 0
+            evaluate_csv(args.input, args.output, args.threshold)
 
-    except (ValueError, OSError, json.JSONDecodeError) as error:
-        print(json.dumps({"error": str(error)}))
-        return 1
+        elif args.command == "verify":
+            metrics = {
+                name: getattr(args, name) for name in METRICS
+            }
+            result = verify_action(metrics, args.threshold)
+            for key, value in result.items():
+                print(f"{key}: {value}")
+            if result["decision"] != "PASS_SCREEN":
+                sys.exit(2)
 
-    return 1
+        elif args.command == "joints":
+            result = validate_joints(args.values)
+            for key, value in result.items():
+                print(f"{key}: {value}")
+            if result["decision"] != "PASS_LIMITS":
+                sys.exit(2)
+
+        elif args.command == "self-test":
+            run_self_tests()
+
+    except (SafetyInputError, OSError, csv.Error) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()
