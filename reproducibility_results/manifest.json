@@ -1,0 +1,19 @@
+{
+  "all_trials_sha256": "f32acd035d030f9da9846bc374b4a85099e73dba1b5fbc0b5a5574dc0bc5be13",
+  "config_sha256": "6102d69e304030f957e2f095d4cffd3729057b077609be21094e41915f5b2736",
+  "elapsed_seconds": 3.772,
+  "experiment_type": "synthetic_threshold_sensitivity_test",
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "script_sha256": "78d87c12c14fea88200644838000d4f11a487a535beb3ba17b0de01ed14e353a",
+  "seed": 20261013,
+  "summary_sha256": "bb0beded6e0f4f438b6102d08d508f45dee73ebeb847f6829818abe9d7eff097",
+  "thresholds": [
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9
+  ],
+  "trials_per_threshold": 50000,
+  "version": "1.0.0"
+}

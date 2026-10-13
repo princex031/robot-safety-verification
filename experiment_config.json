@@ -1,0 +1,22 @@
+{
+  "collision_probability": 0.12,
+  "force_limit_ratio": 1.0,
+  "minimum_stability": 0.2,
+  "score_weights": {
+    "collision": 0.3,
+    "force": 0.15,
+    "reachability": 0.2,
+    "stability": 0.2,
+    "torque": 0.15
+  },
+  "seed": 20261013,
+  "thresholds": [
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9
+  ],
+  "torque_limit_ratio": 1.0,
+  "trials": 20000
+}
