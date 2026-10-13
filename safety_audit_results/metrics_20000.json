@@ -1,0 +1,107 @@
+{
+  "benchmark": "synthetic only",
+  "n": 20000,
+  "seed": 20261013,
+  "weights": {
+    "reach": 0.2,
+    "clearance": 0.3,
+    "force": 0.15,
+    "torque": 0.15,
+    "stability": 0.2
+  },
+  "formulas": {
+    "score": "weighted sum of sigmoid(8 * constraint margin)",
+    "accept": "all margins >= 0 and score >= 0.80 + 0.10*uncertainty",
+    "defer": "not accepted, hard constraints pass, uncertainty >= 0.65",
+    "oracle": "all margins > 0.025 + 0.07*uncertainty"
+  },
+  "counts": {
+    "total": 20000,
+    "oracle_safe": 5886,
+    "oracle_unsafe": 14114,
+    "reject": 14064,
+    "unsafe_accepted": 785,
+    "unsafe_caught": 13329,
+    "safe_accepted": 4576,
+    "safe_rejected": 1135,
+    "accept": 5361,
+    "defer": 575
+  },
+  "metrics": {
+    "unsafe_acceptance_rate": 0.055619,
+    "unsafe_detection_rate": 0.944381,
+    "safe_acceptance_rate": 0.777438,
+    "false_rejection_rate_among_safe": 0.19283,
+    "overall_acceptance_rate": 0.26805,
+    "deferral_rate": 0.02875
+  },
+  "per_body": {
+    "serial_arm": {
+      "counts": {
+        "total": 4039,
+        "oracle_unsafe": 2370,
+        "unsafe_accepted": 260,
+        "accepted": 1736,
+        "deferred": 98,
+        "rejected": 2205
+      },
+      "unsafe_acceptance_rate": 0.109705,
+      "acceptance_rate": 0.429809
+    },
+    "mobile_manipulator": {
+      "counts": {
+        "total": 4078,
+        "oracle_unsafe": 2801,
+        "unsafe_accepted": 148,
+        "accepted": 1131,
+        "deferred": 119,
+        "rejected": 2828
+      },
+      "unsafe_acceptance_rate": 0.052838,
+      "acceptance_rate": 0.277342
+    },
+    "humanoid": {
+      "counts": {
+        "total": 3908,
+        "oracle_unsafe": 2972,
+        "unsafe_accepted": 99,
+        "accepted": 727,
+        "deferred": 129,
+        "rejected": 3052
+      },
+      "unsafe_acceptance_rate": 0.033311,
+      "acceptance_rate": 0.186029
+    },
+    "parallel_gripper": {
+      "counts": {
+        "total": 4063,
+        "oracle_unsafe": 3205,
+        "unsafe_accepted": 135,
+        "accepted": 752,
+        "deferred": 116,
+        "rejected": 3195
+      },
+      "unsafe_acceptance_rate": 0.042122,
+      "acceptance_rate": 0.185085
+    },
+    "generic_other": {
+      "counts": {
+        "total": 3912,
+        "oracle_unsafe": 2766,
+        "unsafe_accepted": 143,
+        "accepted": 1015,
+        "deferred": 113,
+        "rejected": 2784
+      },
+      "unsafe_acceptance_rate": 0.051699,
+      "acceptance_rate": 0.259458
+    }
+  },
+  "limitations": [
+    "Synthetic data only; no physical robot simulation or hardware test.",
+    "Illustrative body profiles do not prove universal cross-embodiment safety.",
+    "Oracle uses the same synthetic margins; it is not an external safety authority.",
+    "This does not reproduce the paper's reported experiment unless its original data, implementation and protocol are matched.",
+    "Empirical zero errors, if observed, do not prove zero real-world risk."
+  ]
+}

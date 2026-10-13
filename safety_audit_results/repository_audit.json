@@ -1,0 +1,389 @@
+{
+  "repo_root": "C:\\Users\\als\\OneDrive\\Documents\\GitHub\\robot-safety-verification",
+  "file_checks": {
+    "README.md": true,
+    "requirements.txt": true,
+    "pyproject.toml": false,
+    "setup.py": false,
+    "src": true,
+    "tests": true,
+    "configs": true,
+    "data": true,
+    "results": true,
+    "docs": true,
+    "baselines": true,
+    "ablation": true
+  },
+  "documentation_matches": [
+    {
+      "file": "README.md",
+      "line": 24,
+      "term": "20,000",
+      "text": "In the primary manuscript-supplied validation consisting of 20,000 synthetic candidates evaluated at \\(\\tau = 0.80\\):"
+    },
+    {
+      "file": "README.md",
+      "line": 30,
+      "term": "false-safe",
+      "text": "Observed False-Safe Rate\t0.00%"
+    },
+    {
+      "file": "README.md",
+      "line": 32,
+      "term": "false rejection",
+      "text": "False Rejection Rate\t31.68% (749 rejected)"
+    },
+    {
+      "file": "README.md",
+      "line": 58,
+      "term": "reproduc",
+      "text": "Reported paper results should be clearly distinguished from results independently reproduced by this implementation. Exact reproduction requires the original experimental code, data, configuration, and evaluation procedure. Hardware deployment requires separate validation and appropriate safety cont"
+    },
+    {
+      "file": "run_all.py",
+      "line": 17,
+      "term": "20000",
+      "text": "N = int(os.environ.get(\"N\", \"20000\"))"
+    },
+    {
+      "file": "run_all.py",
+      "line": 60,
+      "term": "reproduc",
+      "text": "# Search existing docs for reproducibility and validation warnings."
+    },
+    {
+      "file": "run_all.py",
+      "line": 62,
+      "term": "TODO",
+      "text": "\"TODO\", \"FIXME\", \"independent oracle\", \"cross-embodiment\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 62,
+      "term": "FIXME",
+      "text": "\"TODO\", \"FIXME\", \"independent oracle\", \"cross-embodiment\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 62,
+      "term": "independent oracle",
+      "text": "\"TODO\", \"FIXME\", \"independent oracle\", \"cross-embodiment\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 62,
+      "term": "cross-embodiment",
+      "text": "\"TODO\", \"FIXME\", \"independent oracle\", \"cross-embodiment\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 63,
+      "term": "reproduc",
+      "text": "\"reproduc\", \"physical validation\", \"20,000\", \"20000\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 63,
+      "term": "physical validation",
+      "text": "\"reproduc\", \"physical validation\", \"20,000\", \"20000\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 63,
+      "term": "20,000",
+      "text": "\"reproduc\", \"physical validation\", \"20,000\", \"20000\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 63,
+      "term": "20000",
+      "text": "\"reproduc\", \"physical validation\", \"20,000\", \"20000\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 64,
+      "term": "50,000",
+      "text": "\"50,000\", \"50000\", \"false-safe\", \"false rejection\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 64,
+      "term": "50000",
+      "text": "\"50,000\", \"50000\", \"false-safe\", \"false rejection\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 64,
+      "term": "false-safe",
+      "text": "\"50,000\", \"50000\", \"false-safe\", \"false rejection\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 64,
+      "term": "false rejection",
+      "text": "\"50,000\", \"50000\", \"false-safe\", \"false rejection\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 242,
+      "term": "cross-embodiment",
+      "text": "\"Illustrative body profiles do not prove universal cross-embodiment safety.\","
+    },
+    {
+      "file": "run_all.py",
+      "line": 244,
+      "term": "reproduc",
+      "text": "\"This does not reproduce the paper's reported experiment unless its original \""
+    },
+    {
+      "file": "run_all.py",
+      "line": 267,
+      "term": "20000",
+      "text": "print(\"Usage: python run_all.py [20000|50000]\")"
+    },
+    {
+      "file": "run_all.py",
+      "line": 267,
+      "term": "50000",
+      "text": "print(\"Usage: python run_all.py [20000|50000]\")"
+    },
+    {
+      "file": "run_all.py",
+      "line": 271,
+      "term": "20000",
+      "text": "if n not in (20000, 50000):"
+    },
+    {
+      "file": "run_all.py",
+      "line": 271,
+      "term": "50000",
+      "text": "if n not in (20000, 50000):"
+    },
+    {
+      "file": "run_all.py",
+      "line": 272,
+      "term": "20000",
+      "text": "print(\"Use 20000 or 50000 trials. Example: python run_all.py 20000\")"
+    },
+    {
+      "file": "run_all.py",
+      "line": 272,
+      "term": "50000",
+      "text": "print(\"Use 20000 or 50000 trials. Example: python run_all.py 20000\")"
+    },
+    {
+      "file": "ablation\\README.md",
+      "line": 24,
+      "term": "20,000",
+      "text": "In the primary manuscript-supplied validation consisting of 20,000 synthetic candidates evaluated at \\(\\tau = 0.80\\):"
+    },
+    {
+      "file": "ablation\\README.md",
+      "line": 30,
+      "term": "false-safe",
+      "text": "Observed False-Safe Rate\t0.00%"
+    },
+    {
+      "file": "ablation\\README.md",
+      "line": 32,
+      "term": "false rejection",
+      "text": "False Rejection Rate\t31.68% (749 rejected)"
+    },
+    {
+      "file": "configs\\experiment_config.json",
+      "line": 20,
+      "term": "reproduc",
+      "text": "\"reproduction_status\": \"Not yet reproduced\""
+    },
+    {
+      "file": "configs\\experiment_protocol.json",
+      "line": 3,
+      "term": "20000",
+      "text": "\"episodes\": 20000,"
+    },
+    {
+      "file": "results\\final_summary.json",
+      "line": 3,
+      "term": "reproduc",
+      "text": "\"exact_original_paper_reproduction\": false,"
+    },
+    {
+      "file": "results\\final_summary.json",
+      "line": 4,
+      "term": "20000",
+      "text": "\"candidate_count\": 20000,"
+    },
+    {
+      "file": "results\\final_summary.json",
+      "line": 28,
+      "term": "false-safe",
+      "text": "\"Score-only evaluation can reveal false-safe score decisions.\","
+    },
+    {
+      "file": "results\\final_summary.json",
+      "line": 30,
+      "term": "false-safe",
+      "text": "\"Combined false-safe count is zero by construction; it is not independent proof.\","
+    },
+    {
+      "file": "results\\independent_reconstruction_summary.json",
+      "line": 3,
+      "term": "reproduc",
+      "text": "\"original_paper_exact_reproduction\": false,"
+    },
+    {
+      "file": "results\\independent_reconstruction_summary.json",
+      "line": 4,
+      "term": "20000",
+      "text": "\"candidate_count\": 20000,"
+    },
+    {
+      "file": "results\\reconstruction_assumptions.json",
+      "line": 3,
+      "term": "20000",
+      "text": "\"candidate_count\": 20000,"
+    },
+    {
+      "file": "results\\reconstruction_assumptions.json",
+      "line": 19,
+      "term": "reproduc",
+      "text": "\"status\": \"assumption-based; not exact reproduction\""
+    },
+    {
+      "file": "robot_verifier_results\\benchmark.py",
+      "line": 6,
+      "term": "20000",
+      "text": "N = 20000"
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 9,
+      "term": "20000",
+      "text": "20000:"
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 12,
+      "term": "20,000",
+      "text": "20,000:"
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 42,
+      "term": "20,000",
+      "text": "* A scorer for existing rows does not prove 20,000 candidates were generated."
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 44,
+      "term": "reproduc",
+      "text": "* Table reproduction needs the original data, executable logic, parameters,"
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 57,
+      "term": "false rejection",
+      "text": "A rejected action is not automatically a false rejection."
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 62,
+      "term": "false-safe",
+      "text": "False-safe means ground truth is unsafe but prediction says safe."
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 65,
+      "term": "false-safe",
+      "text": "No independent false-safe rate can be established from arithmetic alone."
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 70,
+      "term": "false-safe",
+      "text": "The separately reported 7.62% false-safe result must be traced to its"
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 75,
+      "term": "reproduc",
+      "text": "the paper's claims to what can be reproduced."
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 77,
+      "term": "reproduc",
+      "text": "REPRODUCIBILITY MANIFEST \u2014 SHA-256"
+    },
+    {
+      "file": "robot_verifier_results\\paper_two_issue_audit_20261013_112039.txt",
+      "line": 87,
+      "term": "reproduc",
+      "text": "the required columns exist. It does not claim to execute or reproduce"
+    },
+    {
+      "file": "robot_verifier_results\\summary.json",
+      "line": 3,
+      "term": "20000",
+      "text": "\"proposals_per_scenario\": 20000,"
+    },
+    {
+      "file": "scripts\\run_full_experiment.py",
+      "line": 193,
+      "term": "reproduc",
+      "text": "\"exact_original_paper_reproduction\": False,"
+    },
+    {
+      "file": "scripts\\run_full_experiment.py",
+      "line": 206,
+      "term": "false-safe",
+      "text": "\"Score-only evaluation can reveal false-safe score decisions.\","
+    },
+    {
+      "file": "scripts\\run_full_experiment.py",
+      "line": 208,
+      "term": "false-safe",
+      "text": "\"Combined false-safe count is zero by construction; it is not independent proof.\","
+    },
+    {
+      "file": "scripts\\run_full_experiment.py",
+      "line": 234,
+      "term": "reproduc",
+      "text": "\"status\": \"assumption-based; not exact reproduction\","
+    },
+    {
+      "file": "simulator\\experiment_suite.py",
+      "line": 2,
+      "term": "reproduc",
+      "text": "\"\"\"Reproducible synthetic experiments for robot safety verification."
+    },
+    {
+      "file": "simulator\\experiment_suite.py",
+      "line": 300,
+      "term": "50000",
+      "text": "ext_n = max(n, 50000)"
+    },
+    {
+      "file": "src\\main.py",
+      "line": 4,
+      "term": "reproduc",
+      "text": "20,000 candidates or claim to reproduce its physical safety experiment."
+    },
+    {
+      "file": "src\\main.py",
+      "line": 4,
+      "term": "20,000",
+      "text": "20,000 candidates or claim to reproduce its physical safety experiment."
+    }
+  ],
+  "tests": {
+    "attempted": true,
+    "return_code": 0,
+    "note": "\n..............\n----------------------------------------------------------------------\nRan 14 tests in 0.015s\n\nOK\n"
+  },
+  "limitations": [
+    "Keyword matches are leads for human review, not proof a claim is wrong.",
+    "This script does not automatically alter scientific claims or formulas.",
+    "It does not establish physical safety or universal robot compatibility."
+  ]
+}
